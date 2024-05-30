@@ -853,3 +853,6 @@ def age_AM(matriz_valor, peso_max, vector_pesos, cruce = 0, meme = 0) -> Solucio
         plt.show()
 
     return (mejor_de_pop(pop), evaluadas, eva_bl)
+
+
+
