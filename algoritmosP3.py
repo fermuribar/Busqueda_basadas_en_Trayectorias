@@ -176,8 +176,31 @@ class Problema:
         solucion_calculada.beneficio = solucion_calculada.beneficio + np.sum(self.matriz_valor[permutacion[1], :][solucion_nueva.astype(bool)]) * 2 - self.matriz_valor[permutacion[1], permutacion[1]]
         
         return solucion_calculada
-
     
+    def mutacion_ILS(self, solucion, t) -> np.ndarray:
+        n = solucion.shape[0]
+    
+        # 1. Elegir una posición aleatoria
+        posicion_inicial = np.random.randint(0, n)
+        
+        # 2. Extraer los siguientes 20 elementos de forma cíclica
+        elementos_a_mutar = np.array([solucion[(posicion_inicial + i) % n] for i in range(t)])
+        
+        # 3. Hacer un random shuffle al segundo vector
+        np.random.shuffle(elementos_a_mutar)
+        
+        # 4. Asignar nuevamente los valores barajados al primer vector
+        for i in range(t):
+            solucion[(posicion_inicial + i) % n] = elementos_a_mutar[i]
+
+        # 5. factibilizar la solucion
+        if not self.factible(solucion):
+            solucion = self.factibilizar(solucion)
+        
+        return solucion
+
+
+
 #   ____  _      
 #  |  _ \| |     
 #  | |_) | |     
@@ -185,7 +208,7 @@ class Problema:
 #  | |_) | |____ 
 #  |____/|______|
     
-def BL(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, solucion_actual = Solucion()) -> Solucion:
+def BL(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, solucion_actual = Solucion()) -> tuple:
     prob = Problema(matriz_valor, peso_max, vector_pesos)
     if solucion_aleatoria:
         solucion_actual = prob.solucion_inicial()
@@ -206,11 +229,16 @@ def BL(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
                 solucion_actual = solucion_a_explorar_calc
                 v = Vecindarios(solucion_actual.solucion)
             
-    print(N)
-    return solucion_actual
+    return (solucion_actual, N)
 
+#   ______  _____ 
+#  |  ____|/ ____|
+#  | |__  | (___  
+#  |  __|  \___ \ 
+#  | |____ ____) |
+#  |______|_____/ 
 
-def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, solucion_actual = Solucion()) -> Solucion:
+def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, solucion_actual = Solucion(), mejora = False) -> tuple:
     prob = Problema(matriz_valor, peso_max, vector_pesos)
     if solucion_aleatoria:
         solucion_actual = prob.solucion_inicial()
@@ -233,12 +261,10 @@ def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
     mejor_solucion = solucion_actual
 
     v = Vecindarios(solucion_actual.solucion)
-    print(f"tamaño real del vecindario {v.permutaciones.shape[0]} tamaño maximo de vecinos{max_vecinos}")
     permutacion = [1] #para que entre al while la primera vez
     Nexitos = 1 #para que entre al while la primera vez
-    Progreso = []
 
-    while (Nexitos > 0) and (N < limite):
+    while (Nexitos > 0 or mejora) and (permutacion[0] != -1 or not mejora) and (N < limite):
         Nexitos = 0
         Nvecinos = 0
         while (permutacion[0] != -1) and (N < limite) and Nexitos < max_vecinos and Nvecinos < max_exitos:
@@ -251,14 +277,81 @@ def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
                 if Af < 0 or np.random.rand() < np.exp( -Af / T):
                     solucion_actual = solucion_a_explorar_calc
                     Nexitos += 1
-                    Progreso.append(solucion_actual.beneficio)
                     v = Vecindarios(solucion_actual.solucion)
                     if Af < 0:
                         mejor_solucion = solucion_actual
         T = T / (1 + B * T)
-    plt.plot(Progreso)
-    plt.show()
-    print(T)
-    print(Tf)
-    print(N)
-    return mejor_solucion
+
+    return (mejor_solucion, N)
+
+#   ____  __  __ ____  
+#  |  _ \|  \/  |  _ \ 
+#  | |_) | \  / | |_) |
+#  |  _ <| |\/| |  _ < 
+#  | |_) | |  | | |_) |
+#  |____/|_|  |_|____/ 
+
+def BMB(matriz_valor, peso_max, vector_pesos, limite_bmb, limite_bl, Busqueda = "BL", mejora = False) -> tuple:
+    mejor_solucion = Solucion()
+    mejor_solucion.beneficio = 0
+    N=0
+    N_ciclos_bmb = 0
+    while N_ciclos_bmb < limite_bmb:
+        if Busqueda == "BL":
+            solucion_actual, n = BL(matriz_valor, peso_max, vector_pesos, limite_bl)
+        elif Busqueda == "ES":
+            solucion_actual, n = ES(matriz_valor, peso_max, vector_pesos, limite_bl, mejora=mejora)
+        else:
+            print("Busqueda no valida")
+            return (None, None)
+        N += n
+        if solucion_actual.beneficio > mejor_solucion.beneficio:
+            mejor_solucion = solucion_actual
+        
+        N_ciclos_bmb += 1
+    
+    return (mejor_solucion, N)
+
+#   _____ _       _____ 
+#  |_   _| |     / ____|
+#    | | | |    | (___  
+#    | | | |     \___  \ 
+#   _| |_| |____ ____) |
+#  |_____|______|_____/ 
+
+
+def ILS(matriz_valor, peso_max, vector_pesos, limite_ils, limite_bl, t, Busqueda = "BL", mejora = False) -> tuple:
+    prob = Problema(matriz_valor, peso_max, vector_pesos)
+    N=0
+    if Busqueda == "BL":
+        solucion_actual, n = BL(matriz_valor, peso_max, vector_pesos, limite_bl)
+    elif Busqueda == "ES":
+        solucion_actual, n = ES(matriz_valor, peso_max, vector_pesos, limite_bl, mejora=mejora)
+    else:
+        print("Busqueda no valida")
+        return (None, None)
+    N += n
+    mejor_solucion = solucion_actual
+    
+    N_ciclos_ils = 1
+    while N_ciclos_ils < limite_ils:
+        #mutacion
+        solucion_actual = prob.mutacion_ILS(mejor_solucion.solucion, t)
+        #calculo de la solucion mutada
+        solucion_actual = prob.calculo_solucion(solucion_actual)
+        N += 1
+        #busqueda local
+        if Busqueda == "BL":
+            solucion_actual, n = BL(matriz_valor, peso_max, vector_pesos, limite_bl, solucion_aleatoria = False, solucion_actual = solucion_actual)
+        elif Busqueda == "ES":
+            solucion_actual, n = ES(matriz_valor, peso_max, vector_pesos, limite_bl, solucion_aleatoria = False, solucion_actual = solucion_actual, mejora=mejora)
+        else:
+            print("Busqueda no valida")
+            return (None, None)
+        N += n
+        if solucion_actual.beneficio > mejor_solucion.beneficio:
+            mejor_solucion = solucion_actual
+        
+        N_ciclos_ils += 1
+    
+    return (mejor_solucion, N)
