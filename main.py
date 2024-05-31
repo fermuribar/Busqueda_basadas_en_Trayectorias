@@ -1,5 +1,6 @@
 import config as conf
 import algoritmosV4 as alg
+import algoritmosP3 as alg3
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -22,67 +23,91 @@ def main():
             return
         matriz_valores, peso_maximo, vector_pesos = alg.procesar_archivo(ruta_archivo)
         np.random.seed(conf.SEMILLA)
-        solucion = alg.BL_primer_mejor(matriz_valores,peso_maximo,vector_pesos)
-        print("BL -> ({}) Con un peso disponible de: {}    y bondad total de: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio))
-        print('')
-        np.random.seed(conf.SEMILLA)
-        solucion_mejora = alg.BL_primer_mejor(matriz_valores,peso_maximo,vector_pesos, vecindario = 1)
-        print("BL+ -> ({}) Con un peso disponible de: {}    y bondad total de: {}".format(ruta_archivo, peso_maximo - solucion_mejora.peso ,solucion_mejora.beneficio))
-        print('')
-        np.random.seed(conf.SEMILLA)
-        sol_agg, eva_agg, _ = alg.agg(matriz_valores, peso_maximo, vector_pesos)
-        print("Agg -> ({}) Con un peso disponible de: {}    y bondad total de: {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_agg.peso ,sol_agg.beneficio, eva_agg))
-        print('')
-        np.random.seed(conf.SEMILLA)
+        inicio = time.time()
         sol_agg_1, eva_agg_1, _ = alg.agg(matriz_valores, peso_maximo, vector_pesos,cruce=1)
-        print("Agg_1 -> ({}) Con un peso disponible de: {}    y bondad total de: {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_agg_1.peso ,sol_agg_1.beneficio, eva_agg_1))
-        print('')
+        fin = time.time()
+        duracion_agg_1 = fin - inicio
+        if conf.MOSTRAR_CADA_SALIDA:
+            print(sol_agg_1.solucion.astype(int))
+            print("Agg_1 -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_agg_1.peso ,sol_agg_1.beneficio, duracion_agg_1, eva_agg_1))
+            print('')
+
         np.random.seed(conf.SEMILLA)
-        sol_age, eva_age = alg.age(matriz_valores, peso_maximo, vector_pesos)
-        print("Age -> ({}) Con un peso disponible de: {}    y bondad total de: {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_age.peso ,sol_age.beneficio, eva_age))
-        print('')
+        inicio = time.time()
+        sol_BL, eva_BL = alg3.BL(matriz_valores, peso_maximo, vector_pesos, limite=conf.MAX_EVALUACIONES)
+        fin = time.time()
+        duracion_BL = fin - inicio
+        if conf.MOSTRAR_CADA_SALIDA:
+            print(sol_BL.solucion.astype(int))
+            print("BL -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_BL.peso ,sol_BL.beneficio, duracion_BL, eva_BL))
+            print('')
+
         np.random.seed(conf.SEMILLA)
-        sol_age_1, eva_age_1 = alg.age(matriz_valores, peso_maximo, vector_pesos,cruce=1)
-        print("Age_1 -> ({}) Con un peso disponible de: {}    y bondad total de: {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_age_1.peso ,sol_age_1.beneficio, eva_age_1))
-        print('')
+        inicio = time.time()
+        sol_ES, eva_ES = alg3.ES(matriz_valores, peso_maximo, vector_pesos, limite=conf.MAX_EVALUACIONES)
+        fin = time.time()
+        duracion_ES = fin - inicio
+        if conf.MOSTRAR_CADA_SALIDA:
+            print(sol_ES.solucion.astype(int))
+            print("ES -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ES.peso ,sol_ES.beneficio, duracion_ES, eva_ES))
+            print('')
+
         np.random.seed(conf.SEMILLA)
-        sol_am1, eva_am1, bl_am1 = alg.agg(matriz_valores, peso_maximo, vector_pesos, meme=1)
-        print("Am1 -> ({}) Con un peso disponible de: {}    y bondad total de: {} || evaluaciones P: {};  evaluaciones bl: {}".format(ruta_archivo, peso_maximo - sol_am1.peso ,sol_am1.beneficio, eva_am1-bl_am1, bl_am1))
-        print('')
+        inicio = time.time()
+        sol_BMB, eva_BMB = alg3.BMB(matriz_valores, peso_maximo, vector_pesos, limite_bmb=conf.LIMITE_BMB, limite_bl=conf.LIMITE_BL_BMB, Busqueda = "BL")
+        fin = time.time()
+        duracion_BMB = fin - inicio
+        if conf.MOSTRAR_CADA_SALIDA:
+            print(sol_BMB.solucion.astype(int))
+            print("BMB -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_BMB.peso ,sol_BMB.beneficio, duracion_BMB, eva_BMB))
+            print('')
+
         np.random.seed(conf.SEMILLA)
-        sol_am2, eva_am2, bl_am2 = alg.agg(matriz_valores, peso_maximo, vector_pesos, meme=2)
-        print("Am2 -> ({}) Con un peso disponible de: {}    y bondad total de: {} || evaluaciones P: {};  evaluaciones bl: {}".format(ruta_archivo, peso_maximo - sol_am2.peso ,sol_am2.beneficio, eva_am2-bl_am2, bl_am2))
-        print('')
+        inicio = time.time()
+        sol_BMB_ES, eva_BMB_ES = alg3.BMB(matriz_valores, peso_maximo, vector_pesos, limite_bmb=conf.LIMITE_BMB, limite_bl=conf.LIMITE_BL_BMB, Busqueda = "ES")
+        fin = time.time()
+        duracion_BMB_ES = fin - inicio
+        if conf.MOSTRAR_CADA_SALIDA:
+            print(sol_BMB_ES.solucion.astype(int))
+            print("BMB_ES -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_BMB_ES.peso ,sol_BMB_ES.beneficio, duracion_BMB_ES, eva_BMB_ES))
+            print('')
+
         np.random.seed(conf.SEMILLA)
-        sol_am3, eva_am3, bl_am3 = alg.agg(matriz_valores, peso_maximo, vector_pesos, meme=3)
-        print("Am3 -> ({}) Con un peso disponible de: {}    y bondad total de: {} || evaluaciones P: {};  evaluaciones bl: {}".format(ruta_archivo, peso_maximo - sol_am3.peso ,sol_am3.beneficio, eva_am3-bl_am3, bl_am3))
-        print('')
+        inicio = time.time()
+        sol_ILS, eva_ILS = alg3.ILS(matriz_valores, peso_maximo, vector_pesos, limite_bmb=conf.LIMITE_BMB, limite_bl=conf.LIMITE_BL_BMB, t=conf.T_MUTACION, Busqueda = "BL")
+        fin = time.time()
+        duracion_ILS = fin - inicio
+        if conf.MOSTRAR_CADA_SALIDA:
+            print(sol_BMB.solucion.astype(int))
+            print("ILS -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ILS.peso ,sol_ILS.beneficio, duracion_ILS, eva_ILS))
+            print('')
+
+        np.random.seed(conf.SEMILLA)
+        inicio = time.time()
+        sol_ILS_ES, eva_ILS_ES = alg3.ILS(matriz_valores, peso_maximo, vector_pesos, limite_bmb=conf.LIMITE_BMB, limite_bl=conf.LIMITE_BL_BMB, t=conf.T_MUTACION, Busqueda = "ES")
+        fin = time.time()
+        duracion_ILS_ES = fin - inicio
+        if conf.MOSTRAR_CADA_SALIDA:
+            print(sol_BMB.solucion.astype(int))
+            print("ILS -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ILS_ES.peso ,sol_ILS_ES.beneficio, duracion_ILS_ES, eva_ILS_ES))
+            print('')
+
         return
 
     # Crear un DataFrame vacío con las columnas específicas
-    if conf.MEJORA_BL:
-        columnas = ['Nombre del problema',  'Solucion BL', 'Peso BL', 'Bondad BL', 'Tiempo BL', 
-                                            'Solucion Greedy', 'Peso Greedy', 'Bondad Greedy', 'Tiempo Greedy', 
-                                            'Solucion agg', 'Peso agg', 'Bondad agg', 'Tiempo agg', 
-                                            'Solucion agg_1', 'Peso agg_1', 'Bondad agg_1', 'Tiempo agg_1', 
-                                            'Solucion age', 'Peso age', 'Bondad age', 'Tiempo age', 
-                                            'Solucion age_1', 'Peso age_1', 'Bondad age_1', 'Tiempo age_1', 
-                                            'Solucion am1', 'Peso am1', 'Bondad am1', 'Tiempo am1',
-                                            'Solucion am2', 'Peso am2', 'Bondad am2', 'Tiempo am2',
-                                            'Solucion am3', 'Peso am3', 'Bondad am3', 'Tiempo am3',
-                                            'Solucion BL+', 'Peso BL+', 'Bondad BL+', 'Tiempo BL+']
-    else:
-        columnas = ['Nombre del problema',  'Solucion BL', 'Peso BL', 'Bondad BL', 'Tiempo BL', 
-                                            'Solucion Greedy', 'Peso Greedy', 'Bondad Greedy', 'Tiempo Greedy', 
-                                            'Solucion agg', 'Peso agg', 'Bondad agg', 'Tiempo agg', 
-                                            'Solucion agg_1', 'Peso agg_1', 'Bondad agg_1', 'Tiempo agg_1',
-                                            'Solucion age', 'Peso age', 'Bondad age', 'Tiempo age',
-                                            'Solucion age_1', 'Peso age_1', 'Bondad age_1', 'Tiempo age_1', 
-                                            'Solucion am1', 'Peso am1', 'Bondad am1', 'Tiempo am1',
-                                            'Solucion am2', 'Peso am2', 'Bondad am2', 'Tiempo am2',
-                                            'Solucion am3', 'Peso am3', 'Bondad am3', 'Tiempo am3']
+    
+    columnas = ['Nombre del problema',  'Solucion Greedy', 'Peso Greedy', 'Bondad Greedy', 'Tiempo Greedy', 
+                                        'Solucion agg_1', 'Peso agg_1', 'Bondad agg_1', 'Tiempo agg_1', 
+                                        'Solucion BL', 'Peso BL', 'Bondad BL', 'Tiempo BL', 
+                                        'Solucion ES', 'Peso ES', 'Bondad ES', 'Tiempo ES', 
+                                        'Solucion BMB', 'Peso BMB', 'Bondad BMB', 'Tiempo BMB',
+                                        'Solucion BMB_ES', 'Peso BMB_ES', 'Bondad BMB_ES', 'Tiempo BMB_ES',
+                                        'Solucion ILS', 'Peso ILS', 'Bondad ILS', 'Tiempo ILS',
+                                        'Solucion ILS_ES', 'Peso ILS_ES', 'Bondad ILS_ES', 'Tiempo ILS_ES']
+    
         
     tabla = pd.DataFrame(columns=columnas)
+
     # Uso de la función
     Carga=0
     if (conf.SOLO_EJECUTAR_100 and conf.SOLO_EJECUTAR_200) or (conf.SOLO_EJECUTAR_100 and conf.SOLO_EJECUTAR_300) or (conf.SOLO_EJECUTAR_200 and conf.SOLO_EJECUTAR_300):
@@ -120,33 +145,13 @@ def main():
 
                 matriz_valores, peso_maximo, vector_pesos = alg.procesar_archivo(ruta_archivo)
 
-                np.random.seed(conf.SEMILLA)
                 inicio = time.time()
-                solucion = alg.BL_primer_mejor(matriz_valores,peso_maximo,vector_pesos)
-                fin = time.time()
-                duracion_BL = fin - inicio
-                if conf.MOSTRAR_CADA_SALIDA:
-                    print(solucion.solucion.astype(int))
-                    print("BL -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio, duracion_BL))
-                    print('')
-
-                inicio = time.time()
-                sol = alg.greedy(matriz_valores, peso_maximo, vector_pesos)
+                solucion_greedy = alg.greedy(matriz_valores, peso_maximo, vector_pesos)
                 fin = time.time()
                 duracion_Greedy = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol.solucion.astype(int))
-                    print("Greedy -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {}".format(ruta_archivo, peso_maximo - sol.peso ,sol.beneficio, duracion_Greedy))
-                    print('')
-
-                np.random.seed(conf.SEMILLA)
-                inicio = time.time()
-                sol_agg, eva_agg, _ = alg.agg(matriz_valores, peso_maximo, vector_pesos)
-                fin = time.time()
-                duracion_agg = fin - inicio
-                if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_agg.solucion.astype(int))
-                    print("Agg -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_agg.peso ,sol_agg.beneficio, duracion_agg, eva_agg))
+                    print(solucion_greedy.solucion.astype(int))
+                    print("Greedy -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {}".format(ruta_archivo, peso_maximo - solucion_greedy.peso ,solucion_greedy.beneficio, duracion_Greedy))
                     print('')
 
                 np.random.seed(conf.SEMILLA)
@@ -161,85 +166,72 @@ def main():
 
                 np.random.seed(conf.SEMILLA)
                 inicio = time.time()
-                sol_age, eva_age = alg.age(matriz_valores, peso_maximo, vector_pesos)
+                sol_BL, eva_BL = alg3.BL(matriz_valores, peso_maximo, vector_pesos, limite=conf.MAX_EVALUACIONES)
                 fin = time.time()
-                duracion_age = fin - inicio
+                duracion_BL = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_age.solucion.astype(int))
-                    print("Age -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_age.peso ,sol_age.beneficio, duracion_age, eva_age))
+                    print(sol_BL.solucion.astype(int))
+                    print("BL -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_BL.peso ,sol_BL.beneficio, duracion_BL, eva_BL))
                     print('')
 
                 np.random.seed(conf.SEMILLA)
                 inicio = time.time()
-                sol_age_1, eva_age_1 = alg.age(matriz_valores, peso_maximo, vector_pesos,cruce=1)
+                sol_ES, eva_ES = alg3.ES(matriz_valores, peso_maximo, vector_pesos, limite=conf.MAX_EVALUACIONES)
                 fin = time.time()
-                duracion_age_1 = fin - inicio
+                duracion_ES = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_age_1.solucion.astype(int))
-                    print("Age_1 -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_age_1.peso ,sol_age_1.beneficio, duracion_age_1, eva_age_1))
+                    print(sol_ES.solucion.astype(int))
+                    print("ES -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ES.peso ,sol_ES.beneficio, duracion_ES, eva_ES))
                     print('')
 
                 np.random.seed(conf.SEMILLA)
                 inicio = time.time()
-                sol_am1, eva_am1, bl_am1 = alg.agg(matriz_valores, peso_maximo, vector_pesos, meme=1)
+                sol_BMB, eva_BMB = alg3.BMB(matriz_valores, peso_maximo, vector_pesos, limite_bmb=conf.LIMITE_BMB, limite_bl=conf.LIMITE_BL_BMB, Busqueda = "BL")
                 fin = time.time()
-                duracion_am1 = fin - inicio
+                duracion_BMB = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_am1.solucion.astype(int))
-                    print("Am1 -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones P: {};  evaluaciones bl: {}".format(ruta_archivo, peso_maximo - sol_am1.peso ,sol_am1.beneficio, duracion_am1, eva_am1-bl_am1, bl_am1))
+                    print(sol_BMB.solucion.astype(int))
+                    print("BMB -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_BMB.peso ,sol_BMB.beneficio, duracion_BMB, eva_BMB))
                     print('')
 
                 np.random.seed(conf.SEMILLA)
                 inicio = time.time()
-                sol_am2, eva_am2, bl_am2 = alg.agg(matriz_valores, peso_maximo, vector_pesos, meme=2)
+                sol_BMB_ES, eva_BMB_ES = alg3.BMB(matriz_valores, peso_maximo, vector_pesos, limite_bmb=conf.LIMITE_BMB, limite_bl=conf.LIMITE_BL_BMB, Busqueda = "ES")
                 fin = time.time()
-                duracion_am2 = fin - inicio
+                duracion_BMB_ES = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_am2.solucion.astype(int))
-                    print("Am2 -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones P: {};  evaluaciones bl: {}".format(ruta_archivo, peso_maximo - sol_am2.peso ,sol_am2.beneficio, duracion_am2, eva_am2-bl_am2, bl_am2))
+                    print(sol_BMB_ES.solucion.astype(int))
+                    print("BMB_ES -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_BMB_ES.peso ,sol_BMB_ES.beneficio, duracion_BMB_ES, eva_BMB_ES))
                     print('')
 
                 np.random.seed(conf.SEMILLA)
                 inicio = time.time()
-                sol_am3, eva_am3, bl_am3 = alg.agg(matriz_valores, peso_maximo, vector_pesos, meme=3)
+                sol_ILS, eva_ILS = alg3.ILS(matriz_valores, peso_maximo, vector_pesos, limite_ils=conf.LIMITE_ILS, limite_bl=conf.LIMITE_BL_ILS, t=conf.T_MUTACION, Busqueda = "BL")
                 fin = time.time()
-                duracion_am3 = fin - inicio
+                duracion_ILS = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_am3.solucion.astype(int))
-                    print("Am3 -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones P: {};  evaluaciones bl: {}".format(ruta_archivo, peso_maximo - sol_am3.peso ,sol_am3.beneficio, duracion_am3, eva_am3-bl_am3, bl_am3))
+                    print(sol_BMB.solucion.astype(int))
+                    print("ILS -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ILS.peso ,sol_ILS.beneficio, duracion_ILS, eva_ILS))
                     print('')
 
-                if conf.MEJORA_BL:
-                    np.random.seed(conf.SEMILLA)
-                    inicio = time.time()
-                    solucion_mejora = alg.BL_primer_mejor(matriz_valores,peso_maximo,vector_pesos, vecindario = 1)
-                    fin = time.time()
-                    duracion_BL_mejora = fin - inicio
-                    if conf.MOSTRAR_CADA_SALIDA:
-                        print(solucion_mejora.solucion.astype(int))
-                        print("BL+ -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {}".format(ruta_archivo, peso_maximo - solucion_mejora.peso ,solucion_mejora.beneficio, duracion_BL_mejora))
-                        print('')
-                        
-                    tabla.loc[len(tabla)] = [ruta_archivo,  solucion.solucion, solucion.peso, solucion.beneficio, duracion_BL, 
-                                                            sol.solucion, sol.peso, sol.beneficio, duracion_Greedy, 
-                                                            sol_agg.solucion, sol_agg.peso, sol_agg.beneficio, duracion_agg, 
-                                                            sol_agg_1.solucion, sol_agg_1.peso, sol_agg_1.beneficio, duracion_agg_1, 
-                                                            sol_age.solucion, sol_age.peso, sol_age.beneficio, duracion_age,
-                                                            sol_age_1.solucion, sol_age_1.peso, sol_age_1.beneficio, duracion_age_1,
-                                                            sol_am1.solucion, sol_am1.peso, sol_am1.beneficio, duracion_am1, 
-                                                            sol_am2.solucion, sol_am2.peso, sol_am2.beneficio, duracion_am2, 
-                                                            sol_am3.solucion, sol_am3.peso, sol_am3.beneficio, duracion_am3, 
-                                                            solucion_mejora.solucion, solucion_mejora.peso, solucion_mejora.beneficio, duracion_BL_mejora]
-                else:
-                    tabla.loc[len(tabla)] = [ruta_archivo,  solucion.solucion, solucion.peso, solucion.beneficio, duracion_BL, 
-                                                            sol.solucion, sol.peso, sol.beneficio, duracion_Greedy, 
-                                                            sol_agg.solucion, sol_agg.peso, sol_agg.beneficio, duracion_agg, 
-                                                            sol_agg_1.solucion, sol_agg_1.peso, sol_agg_1.beneficio, duracion_agg_1, 
-                                                            sol_age.solucion, sol_age.peso, sol_age.beneficio, duracion_age,
-                                                            sol_age_1.solucion, sol_age_1.peso, sol_age_1.beneficio, duracion_age_1,
-                                                            sol_am1.solucion, sol_am1.peso, sol_am1.beneficio, duracion_am1, 
-                                                            sol_am2.solucion, sol_am2.peso, sol_am2.beneficio, duracion_am2, 
-                                                            sol_am3.solucion, sol_am3.peso, sol_am3.beneficio, duracion_am3]
+                np.random.seed(conf.SEMILLA)
+                inicio = time.time()
+                sol_ILS_ES, eva_ILS_ES = alg3.ILS(matriz_valores, peso_maximo, vector_pesos, limite_ils=conf.LIMITE_ILS, limite_bl=conf.LIMITE_BL_ILS, t=conf.T_MUTACION, Busqueda = "ES")
+                fin = time.time()
+                duracion_ILS_ES = fin - inicio
+                if conf.MOSTRAR_CADA_SALIDA:
+                    print(sol_BMB.solucion.astype(int))
+                    print("ILS -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ILS_ES.peso ,sol_ILS_ES.beneficio, duracion_ILS_ES, eva_ILS_ES))
+                    print('')
+                
+                tabla.loc[len(tabla)] = [ruta_archivo,  solucion_greedy.solucion, solucion_greedy.peso, solucion_greedy.beneficio, duracion_Greedy, 
+                                                        sol_agg_1.solucion, sol_agg_1.peso, sol_agg_1.beneficio, duracion_agg_1, 
+                                                        sol_BL.solucion, sol_BL.peso, sol_BL.beneficio, duracion_BL, 
+                                                        sol_ES.solucion, sol_ES.peso, sol_ES.beneficio, duracion_ES,
+                                                        sol_BMB.solucion, sol_BMB.peso, sol_BMB.beneficio, duracion_BMB,
+                                                        sol_BMB_ES.solucion, sol_BMB_ES.peso, sol_BMB_ES.beneficio, duracion_BMB_ES, 
+                                                        sol_ILS.solucion, sol_ILS.peso, sol_ILS.beneficio, duracion_ILS, 
+                                                        sol_ILS_ES.solucion, sol_ILS_ES.peso, sol_ILS_ES.beneficio, duracion_ILS_ES]
                 print('')
                 print('')
                 print('')
@@ -269,130 +261,98 @@ def main():
     tabla['Tamaño'] = tabla['Nombre del problema'].str.extract(r'jeu_(\d+)_').astype(int)
     tabla['Densidad'] = tabla['Nombre del problema'].str.extract(r'jeu_\d+_(\d+)_').astype(int)
 
-    # Paso 2: Agrupar los datos por 'Tamaño' y 'Densidad' y calcular la media para las métricas 'Bondad BL' y 'Tiempo BL'
-    resultados_BL = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad BL', 'Tiempo BL']].mean().reset_index()
 
-    # Paso 3: Agrupar los datos por 'Tamaño' y 'Densidad' y calcular la media para las métricas 'Bondad Greedy' y 'Tiempo Greedy'
     resultados_Greedy = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad Greedy', 'Tiempo Greedy']].mean().reset_index()
-
-    # Redondear la bondad a dos decimales para el DataFrame de BL
-    resultados_BL['Bondad BL'] = resultados_BL['Bondad BL'].round(2)
-
-    # Redondear la bondad a dos decimales para el DataFrame de Greedy
     resultados_Greedy['Bondad Greedy'] = resultados_Greedy['Bondad Greedy'].round(2)
-
-    resultados_agg = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad agg', 'Tiempo agg']].mean().reset_index()
-    resultados_agg['Bondad agg'] = resultados_agg['Bondad agg'].round(2)
 
     resultados_agg_1 = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad agg_1', 'Tiempo agg_1']].mean().reset_index()
     resultados_agg_1['Bondad agg_1'] = resultados_agg_1['Bondad agg_1'].round(2)
 
-    resultados_age = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad age', 'Tiempo age']].mean().reset_index()
-    resultados_age['Bondad age'] = resultados_age['Bondad age'].round(2)
+    resultados_BL = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad BL', 'Tiempo BL']].mean().reset_index()
+    resultados_BL['Bondad BL'] = resultados_BL['Bondad BL'].round(2)  
 
-    resultados_age_1 = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad age_1', 'Tiempo age_1']].mean().reset_index()
-    resultados_age_1['Bondad age_1'] = resultados_age_1['Bondad age_1'].round(2)
+    resultados_ES = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad ES', 'Tiempo ES']].mean().reset_index()
+    resultados_ES['Bondad ES'] = resultados_ES['Bondad ES'].round(2)
 
-    resultados_am1 = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad am1', 'Tiempo am1']].mean().reset_index()
-    resultados_am1['Bondad am1'] = resultados_am1['Bondad am1'].round(2)
+    resultados_BMB = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad BMB', 'Tiempo BMB']].mean().reset_index()
+    resultados_BMB['Bondad BMB'] = resultados_BMB['Bondad BMB'].round(2)
 
-    resultados_am2 = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad am2', 'Tiempo am2']].mean().reset_index()
-    resultados_am2['Bondad am2'] = resultados_am2['Bondad am2'].round(2)
+    resultados_BMB_ES = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad BMB_ES', 'Tiempo BMB_ES']].mean().reset_index()
+    resultados_BMB_ES['Bondad BMB_ES'] = resultados_BMB_ES['Bondad BMB_ES'].round(2)
 
-    resultados_am3 = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad am3', 'Tiempo am3']].mean().reset_index()
-    resultados_am3['Bondad am3'] = resultados_am3['Bondad am3'].round(2)
+    resultados_ILS = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad ILS', 'Tiempo ILS']].mean().reset_index()
+    resultados_ILS['Bondad ILS'] = resultados_ILS['Bondad ILS'].round(2)
 
-    if conf.MEJORA_BL:
-        resultados_BL_mejora = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad BL+', 'Tiempo BL+']].mean().reset_index()
-        resultados_BL_mejora['Bondad BL+'] = resultados_BL_mejora['Bondad BL+'].round(2)
+    resultados_ILS_ES = tabla.groupby(['Tamaño', 'Densidad'])[['Bondad ILS_ES', 'Tiempo ILS_ES']].mean().reset_index()
+    resultados_ILS_ES['Bondad ILS_ES'] = resultados_ILS_ES['Bondad ILS_ES'].round(2)
 
-
-    print('')
-    print('')
-    print('[*][·][]Tabla Resultados para BL')
-    print(resultados_BL)
     print('')
     print('[*][·][]Tabla Resultados para Greedy')
     print(resultados_Greedy)
     print('')
-    print('[*][·][]Tabla Resultados para agg')
-    print(resultados_agg)
-    print('')
     print('[*][·][]Tabla Resultados para agg_1')
     print(resultados_agg_1)
     print('')
-    print('[*][·][]Tabla Resultados para age')
-    print(resultados_age)
+    print('[*][·][]Tabla Resultados para BL')
+    print(resultados_BL)
     print('')
-    print('[*][·][]Tabla Resultados para age_1')
-    print(resultados_age_1)
+    print('[*][·][]Tabla Resultados para ES')
+    print(resultados_ES)
     print('')
-    print('[*][·][]Tabla Resultados para am1')
-    print(resultados_am1)
+    print('[*][·][]Tabla Resultados para BMB')
+    print(resultados_BMB)
     print('')
-    print('[*][·][]Tabla Resultados para am2')
-    print(resultados_am2)
+    print('[*][·][]Tabla Resultados para BMB_ES')
+    print(resultados_BMB_ES)
     print('')
-    print('[*][·][]Tabla Resultados para am3')
-    print(resultados_am3)
+    print('[*][·][]Tabla Resultados para ILS')
+    print(resultados_ILS)
     print('')
-    if conf.MEJORA_BL:
-        print('[*][·][]Tabla Resultados para BL+')
-        print(resultados_BL_mejora)
-        print('')
+    print('[*][·][]Tabla Resultados para ILS_ES')
+    print(resultados_ILS_ES)
+    print('')
+    
 
     for i in range(k,p):
         #-------------------
         # Filtrar los DataFrames por el tamaño de interés (en este caso, 100)
-        resultados_BL_c = resultados_BL[resultados_BL['Tamaño'] == i*100]
         resultados_Greedy_c = resultados_Greedy[resultados_Greedy['Tamaño'] == i*100]
-        resultados_agg_c = resultados_agg[resultados_agg['Tamaño'] == i*100]
         resultados_agg_1_c = resultados_agg_1[resultados_agg_1['Tamaño'] == i*100]
-        resultados_age_c = resultados_age[resultados_age['Tamaño'] == i*100]
-        resultados_age_1_c = resultados_age_1[resultados_age_1['Tamaño'] == i*100]
-        resultados_am1_c = resultados_am1[resultados_am1['Tamaño'] == i*100]
-        resultados_am2_c = resultados_am2[resultados_am2['Tamaño'] == i*100]
-        resultados_am3_c = resultados_am3[resultados_am3['Tamaño'] == i*100]
+        resultados_BL_c = resultados_BL[resultados_BL['Tamaño'] == i*100]
+        resultados_ES_c = resultados_ES[resultados_ES['Tamaño'] == i*100]
+        resultados_BMB_c = resultados_BMB[resultados_BMB['Tamaño'] == i*100]
+        resultados_BMB_ES_c = resultados_BMB_ES[resultados_BMB_ES['Tamaño'] == i*100]
+        resultados_ILS_c = resultados_ILS[resultados_ILS['Tamaño'] == i*100]
+        resultados_ILS_ES_c = resultados_ILS_ES[resultados_ILS_ES['Tamaño'] == i*100]
+        
 
         # Calcular las medias de Fitness  para cada algoritmo en tamaño 100
-        media_BL_c = resultados_BL_c['Bondad BL'].mean().round(2)
         media_Greedy_c = resultados_Greedy_c['Bondad Greedy'].mean().round(2)
-        media_agg_c = resultados_agg_c['Bondad agg'].mean().round(2)
         media_agg_1_c = resultados_agg_1_c['Bondad agg_1'].mean().round(2)
-        media_age_c = resultados_age_c['Bondad age'].mean().round(2)
-        media_age_1_c = resultados_age_1_c['Bondad age_1'].mean().round(2)
-        media_am1_c = resultados_am1_c['Bondad am1'].mean().round(2)
-        media_am2_c = resultados_am2_c['Bondad am2'].mean().round(2)
-        media_am3_c = resultados_am3_c['Bondad am3'].mean().round(2)
+        media_BL_c = resultados_BL_c['Bondad BL'].mean().round(2)
+        media_ES_c = resultados_ES_c['Bondad ES'].mean().round(2)
+        media_BMB_c = resultados_BMB_c['Bondad BMB'].mean().round(2)
+        media_BMB_ES_c = resultados_BMB_ES_c['Bondad BMB_ES'].mean().round(2)
+        media_ILS_c = resultados_ILS_c['Bondad ILS'].mean().round(2)
+        media_ILS_ES_c = resultados_ILS_ES_c['Bondad ILS_ES'].mean().round(2)
 
         # La media de Tiempo no se redondea, ya que solo queremos redondear la Bondad
-        media_tiempo_BL_c = resultados_BL_c['Tiempo BL'].mean()
         media_tiempo_Greedy_c = resultados_Greedy_c['Tiempo Greedy'].mean()
-        media_tiempo_agg_c = resultados_agg_c['Tiempo agg'].mean()
         media_tiempo_agg_1_c = resultados_agg_1_c['Tiempo agg_1'].mean()
-        media_tiempo_age_c = resultados_age_c['Tiempo age'].mean()
-        media_tiempo_age_1_c = resultados_age_1_c['Tiempo age_1'].mean()
-        media_tiempo_am1_c = resultados_am1_c['Tiempo am1'].mean()
-        media_tiempo_am2_c = resultados_am2_c['Tiempo am2'].mean()
-        media_tiempo_am3_c = resultados_am3_c['Tiempo am3'].mean()
+        media_tiempo_BL_c = resultados_BL_c['Tiempo BL'].mean()
+        media_tiempo_ES_c = resultados_ES_c['Tiempo ES'].mean()
+        media_tiempo_BMB_c = resultados_BMB_c['Tiempo BMB'].mean()
+        media_tiempo_BMB_ES_c = resultados_BMB_ES_c['Tiempo BMB_ES'].mean()
+        media_tiempo_ILS_c = resultados_ILS_c['Tiempo ILS'].mean()
+        media_tiempo_ILS_ES_c = resultados_ILS_ES_c['Tiempo ILS_ES'].mean()
 
-        if conf.MEJORA_BL:
-            resultados_BL_mejora_c = resultados_BL_mejora[resultados_BL_mejora['Tamaño'] == i*100]
-            media_BL_mejora_c = resultados_BL_mejora_c['Bondad BL+'].mean().round(2)
-            media_tiempo_BL_mejora_c = resultados_BL_mejora_c['Tiempo BL+'].mean()
-            # Crear un nuevo DataFrame para mostrar los resultados
-            resultados_globales_c = pd.DataFrame({
-                'Algoritmo': ['BL', 'Greedy', 'Agg', 'Agg_1', 'Age', 'Age_1', 'Am1', 'Am2', 'Am3', 'BL+'],
-                'Fitness': [media_BL_c, media_Greedy_c, media_agg_c, media_agg_1_c, media_age_c, media_age_1_c, media_am1_c, media_am2_c, media_am3_c, media_BL_mejora_c],
-                'Tiempo': [media_tiempo_BL_c, media_tiempo_Greedy_c, media_tiempo_agg_c, media_tiempo_agg_1_c, media_tiempo_age_c, media_tiempo_age_1_c, media_tiempo_am1_c, media_tiempo_am2_c, media_tiempo_am3_c, media_tiempo_BL_mejora_c]
-            })
-        else:
-            # Crear un nuevo DataFrame para mostrar los resultados
-            resultados_globales_c = pd.DataFrame({
-                'Algoritmo': ['BL', 'Greedy', 'Agg', 'Agg_1', 'Age', 'Age_1', 'Am1', 'Am2', 'Am3'],
-                'Fitness': [media_BL_c, media_Greedy_c, media_agg_c, media_agg_1_c, media_age_c, media_age_1_c, media_am1_c, media_am2_c, media_am3_c],
-                'Tiempo': [media_tiempo_BL_c, media_tiempo_Greedy_c, media_tiempo_agg_c, media_tiempo_agg_1_c, media_tiempo_age_c, media_tiempo_age_1_c, media_tiempo_am1_c, media_tiempo_am2_c, media_tiempo_am3_c]
-            })
+        
+        # Crear un nuevo DataFrame para mostrar los resultados
+        resultados_globales_c = pd.DataFrame({
+            'Algoritmo': ['Greedy', 'Agg_1', 'BL', 'ES', 'BMB', 'BMB_ES', 'ILS', 'ILS_ES'],
+            'Fitness': [ media_Greedy_c, media_agg_1_c, media_BL_c, media_ES_c, media_BMB_c, media_BMB_ES_c, media_ILS_c, media_ILS_ES_c],
+            'Tiempo': [media_tiempo_Greedy_c, media_tiempo_agg_1_c, media_tiempo_BL_c, media_tiempo_ES_c, media_tiempo_BMB_c, media_tiempo_BMB_ES_c, media_tiempo_ILS_c, media_tiempo_ILS_ES_c]
+        })
 
         # Si es necesario, ordena la tabla por la columna 'Fitness'
         resultados_globales_c = resultados_globales_c.sort_values(by='Fitness', ascending=False).reset_index(drop=True)
@@ -408,93 +368,6 @@ def main():
         print('[*][·][]Tabla con todos los problemas')
         print(tabla)
         tabla.to_csv('ejecucion_completa.txt', sep='\t', index=False)
-
-
-#   _____            __ _               
-#  / ____|          / _(_)              
-# | |  __ _ __ __ _| |_ _  ___ __ _ ___ 
-# | | |_ | '__/ _` |  _| |/ __/ _` / __|
-# | |__| | | | (_| | | | | (_| (_| \__ \
-#  \_____|_|  \__,_|_| |_|\___\__,_|___/
-
-    if conf.MOSTRAR_GRAFICAS:
-        # Establecer el estilo de la gráfica
-        plt.style.use('ggplot')
-
-        # Tamaño del gráfico
-        plt.figure(figsize=(14, 7))
-
-        # Anchura de las barras
-        bar_width = 0.10
-
-        # Índices de las barras
-        indices = np.arange(len(tabla['Nombre del problema']))
-
-        # Dibujo de las barras
-        plt.bar(indices, tabla['Bondad BL'], bar_width, label='Bondad BL', alpha=0.8)
-        plt.bar(indices + bar_width, tabla['Bondad Greedy'], bar_width, label='Bondad Greedy', alpha=0.8)
-        plt.bar(indices + bar_width*2, tabla['Bondad agg'], bar_width, label='Bondad agg', alpha=0.8)
-        plt.bar(indices + bar_width*3, tabla['Bondad agg_1'], bar_width, label='Bondad agg_1', alpha=0.8)
-        plt.bar(indices + bar_width*4, tabla['Bondad age'], bar_width, label='Bondad age', alpha=0.8)
-        plt.bar(indices + bar_width*5, tabla['Bondad age_1'], bar_width, label='Bondad age_1', alpha=0.8)
-        plt.bar(indices + bar_width*6, tabla['Bondad am1'], bar_width, label='Bondad am1', alpha=0.8)
-        plt.bar(indices + bar_width*7, tabla['Bondad am2'], bar_width, label='Bondad am2', alpha=0.8)
-        plt.bar(indices + bar_width*8, tabla['Bondad am3'], bar_width, label='Bondad am3', alpha=0.8)
-        if conf.MEJORA_BL:
-            plt.bar(indices + bar_width * 9, tabla['Bondad BL+'], bar_width, label='Bondad BL+', alpha=0.8)
-
-        # Añadir títulos y etiquetas
-        plt.xlabel('Nombre del problema')
-        plt.ylabel('Bondad')
-        plt.title('Comparación de Bondad')
-        plt.xticks(indices + bar_width / 2, tabla['Nombre del problema'], rotation=90)
-
-        # Añadir leyenda
-        plt.legend()
-
-        # Mostrar gráfico
-        plt.tight_layout()
-        plt.show()
-        
-        #-----------------------------
-        
-        # Establecer el estilo de la gráfica
-        plt.style.use('ggplot')
-
-        # Tamaño del gráfico
-        plt.figure(figsize=(14, 7))
-
-        # Anchura de las barras
-        bar_width = 0.10
-
-        # Índices de las barras
-        indices = np.arange(len(tabla['Nombre del problema']))
-
-        # Dibujo de las barras
-        plt.bar(indices, tabla['Tiempo BL'], bar_width, label='Tiempo BL', alpha=0.8)
-        plt.bar(indices + bar_width, tabla['Tiempo Greedy'], bar_width, label='Tiempo Greedy', alpha=0.8)
-        plt.bar(indices + bar_width*2, tabla['Tiempo agg'], bar_width, label='Tiempo agg', alpha=0.8)
-        plt.bar(indices + bar_width*3, tabla['Tiempo agg_1'], bar_width, label='Tiempo agg_1', alpha=0.8)
-        plt.bar(indices + bar_width*4, tabla['Tiempo age'], bar_width, label='Tiempo age', alpha=0.8)
-        plt.bar(indices + bar_width*5, tabla['Tiempo age_1'], bar_width, label='Tiempo age_1', alpha=0.8)
-        plt.bar(indices + bar_width*6, tabla['Tiempo am1'], bar_width, label='Tiempo am1', alpha=0.8)
-        plt.bar(indices + bar_width*7, tabla['Tiempo am2'], bar_width, label='Tiempo am2', alpha=0.8)
-        plt.bar(indices + bar_width*8, tabla['Tiempo am3'], bar_width, label='Tiempo am3', alpha=0.8)
-        if conf.MEJORA_BL:
-            plt.bar(indices + bar_width*9, tabla['Tiempo BL+'], bar_width, label='Tiempo BL+', alpha=0.8)
-
-        # Añadir títulos y etiquetas
-        plt.xlabel('Nombre del problema')
-        plt.ylabel('Tiempo')
-        plt.title('Comparación de Tiempo')
-        plt.xticks(indices + bar_width / 2, tabla['Nombre del problema'], rotation=90)
-
-        # Añadir leyenda
-        plt.legend()
-
-        # Mostrar gráfico
-        plt.tight_layout()
-        plt.show()
 
 
 
