@@ -194,23 +194,20 @@ def BL(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
         N = 0
     mejora = True
 
-    while mejora:
-        v = Vecindarios(solucion_actual.solucion)
-        solucion_a_explorar, permutacion = v.siguiente_vecino()
-        
-        mejora = False
-        while (permutacion[0] != -1) and (N < limite):
-            if prob.factible(solucion_a_explorar):
-                solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
-                N += 1
-                
-                if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
-                    solucion_actual = solucion_a_explorar_calc
-                    mejora = True
-                    break
-            
-            solucion_a_explorar, permutacion = v.siguiente_vecino()
+   
+    v = Vecindarios(solucion_actual.solucion)
+    permutacion = [1] #para que entre al while la primera vez
 
+    while (permutacion[0] != -1) and (N < limite):
+        solucion_a_explorar, permutacion = v.siguiente_vecino()
+        if prob.factible(solucion_a_explorar):
+            solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
+            N += 1
+            
+            if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
+                solucion_actual = solucion_a_explorar_calc
+                v = Vecindarios(solucion_actual.solucion)
+            
     print(N)
     return solucion_actual
 
