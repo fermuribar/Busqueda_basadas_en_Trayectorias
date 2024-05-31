@@ -19,7 +19,7 @@ print('')
 
 np.random.seed(conf.SEMILLA)
 inicio = time.time()
-solucion = alg3.BL_primer_mejor(matriz_valores,peso_maximo,vector_pesos,conf.MAX_EVALUACIONES)
+solucion = alg3.BL_primer_mejor(matriz_valores,peso_maximo,vector_pesos, limite=conf.MAX_EVALUACIONES)
 fin = time.time()
 duracion = fin - inicio
 print("BL -> ({}) Con un peso disponible de: {}    y bondad total de: {}|T: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio,duracion))

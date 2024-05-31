@@ -185,10 +185,13 @@ class Problema:
 #  | |_) | |____ 
 #  |____/|______|
     
-def BL_primer_mejor(matriz_valor, peso_max, vector_pesos, limite) -> Solucion:
+def BL(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, solucion_actual = Solucion()) -> Solucion:
     prob = Problema(matriz_valor, peso_max, vector_pesos)
-    solucion_actual = prob.solucion_inicial()
-    N = 1
+    if solucion_aleatoria:
+        solucion_actual = prob.solucion_inicial()
+        N = 1
+    else:
+        N = 0
     mejora = True
 
     while mejora:

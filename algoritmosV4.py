@@ -208,11 +208,12 @@ class Problema:
 
             if self.factible(solucion_a_explorar):
                 solucion_a_explorar_calc = self.factorizacion(solucion_a_explorar,permutacion)
+                if not conf.ENTENDER_FACTIVILIDAD_DE_SOLUCION_COMO_PARTE_FUNCION_OBJETIVO:
+                    N[0] += 1
                 if solucion_a_explorar_calc.beneficio > self.solucion_actual.beneficio:
                     self.solucion_actual = solucion_a_explorar_calc
                     return True
-                if not conf.ENTENDER_FACTIVILIDAD_DE_SOLUCION_COMO_PARTE_FUNCION_OBJETIVO:
-                    N[0] += 1
+                
             solucion_a_explorar, permutacion = v.siguiente_vecino()
 
             if conf.ENTENDER_FACTIVILIDAD_DE_SOLUCION_COMO_PARTE_FUNCION_OBJETIVO:
