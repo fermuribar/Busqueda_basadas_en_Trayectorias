@@ -214,3 +214,41 @@ def BL(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
     print(N)
     return solucion_actual
 
+
+def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, solucion_actual = Solucion()) -> Solucion:
+    prob = Problema(matriz_valor, peso_max, vector_pesos)
+    if solucion_aleatoria:
+        solucion_actual = prob.solucion_inicial()
+        N = 1
+    else:
+        N = 0
+
+    mejor_solucion = solucion_actual
+    T0 = (0.1 * solucion_actual.beneficio) / -np.log(0.3)
+    Tf = 10**-3
+
+    while T0 < Tf:
+        Tf*0.1
+
+    T = T0
+    mejora = True
+
+    while mejora:
+        v = Vecindarios(solucion_actual.solucion)
+        solucion_a_explorar, permutacion = v.siguiente_vecino()
+        
+        mejora = False
+        while (permutacion[0] != -1) and (N < limite):
+            if prob.factible(solucion_a_explorar):
+                solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
+                N += 1
+                
+                if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
+                    solucion_actual = solucion_a_explorar_calc
+                    mejora = True
+                    break
+            
+            solucion_a_explorar, permutacion = v.siguiente_vecino()
+
+    print(N)
+    return solucion_actual
