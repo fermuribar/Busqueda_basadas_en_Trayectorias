@@ -416,6 +416,7 @@ def BL_primer_mejor(matriz_valor, peso_max, vector_pesos, vecindario = 0) -> Sol
         else:
             plt.title('Evolución del Beneficio en BL')
         plt.show()
+    print(N[0])
     return prob.solucion_actual
 
 

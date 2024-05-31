@@ -83,19 +83,14 @@ class Vecindarios:
     def siguiente_vecino(self) -> tuple:
         #devuelve el siguiente vecino en el vecindario. Si ya ha sido todos explorados devuelve la misma solucion que generó el vecindario
         siguiente = self.solucion_generadora.copy()
-
-        if(self.permutaciones.shape[1] == 2):
-            permutacion = [-1,-1] #permutacion invalida por defecto 
-        else:
-            permutacion = [-1,-1,-1]
+        permutacion = [-1,-1] #permutacion invalida por defecto 
+        
 
         if(np.any(self.vector_elementos_sin_explorar)):
             indice_elegido = np.argmax(self.vector_elementos_sin_explorar)
             permutacion = self.permutaciones[ self.indice_permutacion[indice_elegido] ][:]
             siguiente[ permutacion[0] ] = 0
             siguiente[ permutacion[1] ] = 1
-            if permutacion.shape[0] == 3:
-                siguiente[ permutacion[2] ] = 1
 
             self.vector_elementos_sin_explorar[indice_elegido] = False
 
@@ -115,7 +110,7 @@ class Problema:
     def solucion_inicial(self) -> Solucion:
         
         solucion = Solucion()
-        solucion.peso = 0
+        solucion.peso = self.peso_max
         solucion.solucion = np.zeros(self.vector_pesos.shape[0])
         # Permuta los indices de manera aleatoria
         indices_aleatorios = np.random.permutation(np.arange(0, solucion.solucion.shape[0]))
@@ -193,18 +188,19 @@ class Problema:
 def BL_primer_mejor(matriz_valor, peso_max, vector_pesos, limite) -> Solucion:
     prob = Problema(matriz_valor, peso_max, vector_pesos)
     solucion_actual = prob.solucion_inicial()
-
     N = 1
     mejora = True
 
     while mejora:
         v = Vecindarios(solucion_actual.solucion)
         solucion_a_explorar, permutacion = v.siguiente_vecino()
+        
         mejora = False
-        while (not np.any(permutacion == -1) and N < limite):
+        while (permutacion[0] != -1) and (N < limite):
             if prob.factible(solucion_a_explorar):
                 solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
                 N += 1
+                
                 if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
                     solucion_actual = solucion_a_explorar_calc
                     mejora = True
@@ -212,6 +208,6 @@ def BL_primer_mejor(matriz_valor, peso_max, vector_pesos, limite) -> Solucion:
             
             solucion_a_explorar, permutacion = v.siguiente_vecino()
 
-
-    return prob.solucion_actual
+    print(N)
+    return solucion_actual
 
