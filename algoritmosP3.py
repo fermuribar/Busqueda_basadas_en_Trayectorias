@@ -267,16 +267,16 @@ def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
     while (Nexitos > 0 or mejora) and (permutacion[0] != -1 or not mejora) and (N < limite):
         Nexitos = 0
         Nvecinos = 0
-        while (permutacion[0] != -1) and (N < limite) and Nexitos < max_vecinos and Nvecinos < max_exitos:
+        while (permutacion[0] != -1) and (N < limite) and Nexitos < max_exitos and Nvecinos < max_vecinos:
             solucion_a_explorar, permutacion = v.siguiente_vecino()
-            if prob.factible(solucion_a_explorar) and (permutacion[0] != -1):
-                solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
+            if prob.factible(solucion_a_explorar) and (permutacion[0] != -1):            
+                solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar, permutacion)         
                 Af = solucion_actual.beneficio - solucion_a_explorar_calc.beneficio
                 N += 1
                 Nvecinos += 1
                 if Af < 0 or np.random.rand() < np.exp( -Af / T):
                     solucion_actual = solucion_a_explorar_calc
-                    Nexitos += 1
+                    Nexitos += 1                
                     v = Vecindarios(solucion_actual.solucion)
                     if Af < 0:
                         mejor_solucion = solucion_actual
