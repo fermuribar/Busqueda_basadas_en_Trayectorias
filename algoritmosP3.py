@@ -192,16 +192,14 @@ def BL(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
         N = 1
     else:
         N = 0
-    mejora = True
-
    
     v = Vecindarios(solucion_actual.solucion)
     permutacion = [1] #para que entre al while la primera vez
 
     while (permutacion[0] != -1) and (N < limite):
         solucion_a_explorar, permutacion = v.siguiente_vecino()
-        if prob.factible(solucion_a_explorar):
-            solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
+        if prob.factible(solucion_a_explorar) and (permutacion[0] != -1):
+            solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar, permutacion)
             N += 1
             
             if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
@@ -220,26 +218,40 @@ def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
     else:
         N = 0
 
-    mejor_solucion = solucion_actual
     T0 = (0.1 * solucion_actual.beneficio) / -np.log(0.3)
     Tf = 10**-3
 
     while T0 < Tf:
         Tf*0.1
 
+    max_vecinos = 5 * solucion_actual.solucion.shape[0]
+    max_exitos = 0.1 * max_vecinos
+    M = limite / max_vecinos
+    
+    B = T0 - Tf / (M * T0 * Tf)
     T = T0
+    mejor_solucion = solucion_actual
+
     v = Vecindarios(solucion_actual.solucion)
     permutacion = [1] #para que entre al while la primera vez
 
     while (permutacion[0] != -1) and (N < limite):
-        solucion_a_explorar, permutacion = v.siguiente_vecino()
-        if prob.factible(solucion_a_explorar):
-            solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
-            N += 1
-            
-            if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
-                solucion_actual = solucion_a_explorar_calc
-                v = Vecindarios(solucion_actual.solucion)
-            
+        Nexitos = 0
+        Nvecinos = 0
+        while (permutacion[0] != -1) and (N < limite) and Nexitos < max_vecinos and Nvecinos < max_exitos:
+            solucion_a_explorar, permutacion = v.siguiente_vecino()
+            if prob.factible(solucion_a_explorar) and (permutacion[0] != -1):
+                solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
+                Af = solucion_actual.beneficio - solucion_a_explorar_calc.beneficio
+                N += 1
+                Nvecinos += 1
+                if Af < 0 or np.random.rand() < np.exp( -Af / T):
+                    solucion_actual = solucion_a_explorar_calc
+                    Nexitos += 1
+                    v = Vecindarios(solucion_actual.solucion)
+                    if Af < 0:
+                        mejor_solucion = solucion_actual
+        T = T / (1 + B * T)
+    print(T)
     print(N)
-    return solucion_actual
+    return mejor_solucion
