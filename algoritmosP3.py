@@ -233,9 +233,12 @@ def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
     mejor_solucion = solucion_actual
 
     v = Vecindarios(solucion_actual.solucion)
+    print(f"tamaño real del vecindario {v.permutaciones.shape[0]} tamaño maximo de vecinos{max_vecinos}")
     permutacion = [1] #para que entre al while la primera vez
+    Nexitos = 1 #para que entre al while la primera vez
+    Progreso = []
 
-    while (permutacion[0] != -1) and (N < limite):
+    while (Nexitos > 0) and (N < limite):
         Nexitos = 0
         Nvecinos = 0
         while (permutacion[0] != -1) and (N < limite) and Nexitos < max_vecinos and Nvecinos < max_exitos:
@@ -248,10 +251,14 @@ def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
                 if Af < 0 or np.random.rand() < np.exp( -Af / T):
                     solucion_actual = solucion_a_explorar_calc
                     Nexitos += 1
+                    Progreso.append(solucion_actual.beneficio)
                     v = Vecindarios(solucion_actual.solucion)
                     if Af < 0:
                         mejor_solucion = solucion_actual
         T = T / (1 + B * T)
+    plt.plot(Progreso)
+    plt.show()
     print(T)
+    print(Tf)
     print(N)
     return mejor_solucion

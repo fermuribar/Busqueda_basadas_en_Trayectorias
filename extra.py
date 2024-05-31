@@ -5,7 +5,7 @@ import config as conf
 import time
 import os
 
-ruta_archivo = "data/jeu_{}_{}_{}.txt".format(200, 50, 4)  # Reemplaza con la ruta de tu archivo
+ruta_archivo = "data/jeu_{}_{}_{}.txt".format(100, 50, 4)  # Reemplaza con la ruta de tu archivo
 
 matriz_valores, peso_maximo, vector_pesos = alg4.procesar_archivo(ruta_archivo)
 
