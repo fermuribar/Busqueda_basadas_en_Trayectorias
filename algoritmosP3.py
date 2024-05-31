@@ -228,24 +228,18 @@ def ES(matriz_valor, peso_max, vector_pesos, limite, solucion_aleatoria = True, 
         Tf*0.1
 
     T = T0
-    mejora = True
+    v = Vecindarios(solucion_actual.solucion)
+    permutacion = [1] #para que entre al while la primera vez
 
-    while mejora:
-        v = Vecindarios(solucion_actual.solucion)
+    while (permutacion[0] != -1) and (N < limite):
         solucion_a_explorar, permutacion = v.siguiente_vecino()
-        
-        mejora = False
-        while (permutacion[0] != -1) and (N < limite):
-            if prob.factible(solucion_a_explorar):
-                solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
-                N += 1
-                
-                if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
-                    solucion_actual = solucion_a_explorar_calc
-                    mejora = True
-                    break
+        if prob.factible(solucion_a_explorar):
+            solucion_a_explorar_calc = prob.factorizacion(solucion_actual, solucion_a_explorar,permutacion)
+            N += 1
             
-            solucion_a_explorar, permutacion = v.siguiente_vecino()
-
+            if solucion_a_explorar_calc.beneficio > solucion_actual.beneficio:
+                solucion_actual = solucion_a_explorar_calc
+                v = Vecindarios(solucion_actual.solucion)
+            
     print(N)
     return solucion_actual
