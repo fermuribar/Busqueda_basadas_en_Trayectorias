@@ -210,7 +210,7 @@ def main():
                 fin = time.time()
                 duracion_ILS = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_BMB.solucion.astype(int))
+                    print(sol_ILS.solucion.astype(int))
                     print("ILS -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ILS.peso ,sol_ILS.beneficio, duracion_ILS, eva_ILS))
                     print('')
 
@@ -220,8 +220,8 @@ def main():
                 fin = time.time()
                 duracion_ILS_ES = fin - inicio
                 if conf.MOSTRAR_CADA_SALIDA:
-                    print(sol_BMB.solucion.astype(int))
-                    print("ILS -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ILS_ES.peso ,sol_ILS_ES.beneficio, duracion_ILS_ES, eva_ILS_ES))
+                    print(sol_ILS_ES.solucion.astype(int))
+                    print("ILS_ES -> ({}) Con un peso disponible de: {}    y bondad total de: {} ||T {} || evaluaciones: {}".format(ruta_archivo, peso_maximo - sol_ILS_ES.peso ,sol_ILS_ES.beneficio, duracion_ILS_ES, eva_ILS_ES))
                     print('')
                 
                 tabla.loc[len(tabla)] = [ruta_archivo,  solucion_greedy.solucion, solucion_greedy.peso, solucion_greedy.beneficio, duracion_Greedy, 
