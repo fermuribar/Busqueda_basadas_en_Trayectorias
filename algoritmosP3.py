@@ -179,25 +179,26 @@ class Problema:
     
     def mutacion_ILS(self, solucion, t) -> np.ndarray:
         n = solucion.shape[0]
+        solucion_aux = solucion.copy()
     
         # 1. Elegir una posición aleatoria
         posicion_inicial = np.random.randint(0, n)
         
         # 2. Extraer los siguientes 20 elementos de forma cíclica
-        elementos_a_mutar = np.array([solucion[(posicion_inicial + i) % n] for i in range(t)])
+        elementos_a_mutar = np.array([solucion_aux[(posicion_inicial + i) % n] for i in range(t)])
         
         # 3. Hacer un random shuffle al segundo vector
         np.random.shuffle(elementos_a_mutar)
         
         # 4. Asignar nuevamente los valores barajados al primer vector
         for i in range(t):
-            solucion[(posicion_inicial + i) % n] = elementos_a_mutar[i]
+            solucion_aux[(posicion_inicial + i) % n] = elementos_a_mutar[i]
 
         # 5. factibilizar la solucion
-        if not self.factible(solucion):
-            solucion = self.factibilizar(solucion)
+        if not self.factible(solucion_aux):
+            solucion_aux = self.factibilizar(solucion_aux)
         
-        return solucion
+        return solucion_aux
 
 
 

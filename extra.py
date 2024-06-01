@@ -5,7 +5,7 @@ import config as conf
 import time
 import os
 
-ruta_archivo = "data/jeu_{}_{}_{}.txt".format(300, 25, 8)  # Reemplaza con la ruta de tu archivo
+ruta_archivo = "data/jeu_{}_{}_{}.txt".format(300, 50, 10)  # Reemplaza con la ruta de tu archivo
 
 matriz_valores, peso_maximo, vector_pesos = alg4.procesar_archivo(ruta_archivo)
 
@@ -15,6 +15,7 @@ solucion, N = alg3.BL(matriz_valores,peso_maximo,vector_pesos, limite=conf.MAX_E
 fin = time.time()
 duracion = fin - inicio
 print(N)
+print(solucion.solucion.astype(int))
 print("BL -> ({}) Con un peso disponible de: {}    y bondad total de: {}|T: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio,duracion))
 print('')
 
@@ -25,6 +26,7 @@ solucion, N = alg3.ES(matriz_valores,peso_maximo,vector_pesos, limite=conf.MAX_E
 fin = time.time()
 duracion = fin - inicio
 print(N)
+print(solucion.solucion.astype(int))
 print("ES -> ({}) Con un peso disponible de: {}    y bondad total de: {}|T: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio,duracion))
 print('')
 
@@ -34,6 +36,7 @@ solucion, N = alg3.BMB(matriz_valores, peso_maximo, vector_pesos, 20, 4500, Busq
 fin = time.time()
 duracion = fin - inicio
 print(N)
+print(solucion.solucion.astype(int))
 print("BMB -> ({}) Con un peso disponible de: {}    y bondad total de: {}|T: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio,duracion))
 print('')
 
@@ -43,6 +46,7 @@ solucion, N = alg3.BMB(matriz_valores, peso_maximo, vector_pesos, 20, 4500, Busq
 fin = time.time()
 duracion = fin - inicio
 print(N)
+print(solucion.solucion.astype(int))
 print("BMB_ES -> ({}) Con un peso disponible de: {}    y bondad total de: {}|T: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio,duracion))
 print('')
 
@@ -52,6 +56,7 @@ solucion, N = alg3.ILS(matriz_valores, peso_maximo, vector_pesos, 20, 4500, t =2
 fin = time.time()
 duracion = fin - inicio
 print(N)
+print(solucion.solucion.astype(int))
 print("ILS -> ({}) Con un peso disponible de: {}    y bondad total de: {}|T: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio,duracion))
 print('')
 
@@ -61,5 +66,6 @@ solucion, N = alg3.ILS(matriz_valores, peso_maximo, vector_pesos, 20, 4500, t =2
 fin = time.time()
 duracion = fin - inicio
 print(N)
+print(solucion.solucion.astype(int))
 print("ILS_ES -> ({}) Con un peso disponible de: {}    y bondad total de: {}|T: {}".format(ruta_archivo, peso_maximo - solucion.peso ,solucion.beneficio,duracion))
 print('')
