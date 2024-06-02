@@ -1,3 +1,27 @@
+____________________________________________________________________________________________________________________________________________________________________________  
+   _  ______ _   _________  ___   ___  ________  ___  ____
+  / |/ / __ \ | / / __/ _ \/ _ | / _ \/ __/ __/ / _ \|_  /
+ /    / /_/ / |/ / _// // / __ |/ // / _/_\ \  / ___//_ < 
+/_/|_/\____/|___/___/____/_/ |_/____/___/___/ /_/  /____/ 
+                                                          
+Todo el codigo de la practica anterior se han dejado en el codigo algoritmosV4.py para la utilizacion del mejor algoritmos para la comparación de esta practica.
+
+Todo lo nuevo implementado incluso una version mas clara de la busqueda local se encuantra en el codigo algoritmosP3.py
+
+Se han añadido al ficher de configuración mas Parametros usados en esta practica
+
+LIMITE_BMB = 20
+LIMITE_ILS = 20
+LIMITE_BL_BMB = 4500
+LIMITE_BL_ILS = 4500
+
+T_MUTACION = 20
+
+La ejecucion de esta practica sigue siendo simplemente python main.py
+
+____________________________________________________________________________________________________________________________________________________________________________
+
+
 Procedimiento para Desarrollar la Práctica
 
 La practica ha sido realizada con Python, usando librerías como numpy, matplotlib.pyplot,
